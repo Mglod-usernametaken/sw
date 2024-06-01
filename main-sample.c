@@ -28,14 +28,13 @@
 #include <libpic30.h>
 
 int TIME = 32;
-int shift;
-shift = 0;
+int shift = 0;
 
 
 void sleep(unsigned int time){
     //for(uns:gned int i=0;i<(time*1000);i++){
     //  i == i;
-        __delay32(1000000);
+        __delay32(2000000);
     }
 //----------------------------------------------------------------------
 
@@ -90,20 +89,42 @@ struct BCD_Counter {
     unsigned int cyfra10 : 4; // Druga cyfra BCD
 };
 
-// Funkcja inkrementuj?ca licznik BCD
+// Funkcja inkrementująca licznik BCD
 void inkrementujBCD(struct BCD_Counter *licznik) {
-    if (licznik->cyfra1 == 9) {
-        licznik->cyfra1 = 0;
-        if (licznik->cyfra10 == 9) {
-            licznik->cyfra10 = 0;
-        } else {
-            licznik->cyfra10++;
-        }
-    } else {
+    if (licznik->cyfra1 < 9) {
         licznik->cyfra1++;
+    } else {
+        licznik->cyfra1 = 0;
+        if (licznik->cyfra10 < 9) {
+            licznik->cyfra10++;
+        } else {
+            licznik->cyfra10 = 0;
+        }
     }
+    LATA = (licznik->cyfra10 << 4) | licznik->cyfra1;
+    __delay32(2000000);
+}
+ 
+//----------------------------------------------------------------------
+
+// Funkcja dekrementująca licznik BCD
+void dekrementujBCD(struct BCD_Counter *licznik) {
+    if (licznik->cyfra1 > 0) {
+        licznik->cyfra1--;
+    } else {
+        licznik->cyfra1 = 9;
+        if (licznik->cyfra10 > 0) {
+            licznik->cyfra10--;
+        } else {
+            licznik->cyfra10 = 9;
+        }
+    }
+    LATA = (licznik->cyfra10 << 4) | licznik->cyfra1;
+    __delay32(2000000);
+
 }
 
+//----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
 int main(void) {
@@ -120,33 +141,35 @@ TRISA = 0x0000;
 while(1){
     if (BUTTON_IsPressed (BUTTON_S3) == true) {
         shift = shift + 1;
-        if (shift > 4){
+        if (shift > 5){
             shift = 0;
         }
-    __delay32(1000000);
+    __delay32(1000);
     } else if ((BUTTON_IsPressed (BUTTON_S4) == true)) {
         shift = shift - 1;
         if (shift < 0){
-            shift = 4;
+            shift = 5;
         }
-    __delay32(1000000);
+    __delay32(1000);
     }
     // portValue = start << shift;
     // LATA = portValue;
-    if (shift == 0){
+    if (shift == 2){
         zlicz_gora();
-    } else if (shift == 1){
-        zlicz_dol();
-    } else if (shift == 2){
-        zlicz_gray_gora();
     } else if (shift == 3){
-        zlicz_gray_dol();
+        zlicz_dol();
     } else if (shift == 4){
-        inkrementujBCD();
+        zlicz_gray_gora();
+    } else if (shift == 5){
+        zlicz_gray_dol();
+    } else if (shift == 0){
+        inkrementujBCD(&licznik);
+        
+    } else if (shift == 1){
+        dekrementujBCD(&licznik);
     } else{
         __delay32(100);
     }
-
 
 }
 return 0;
