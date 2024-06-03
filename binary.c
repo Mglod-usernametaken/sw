@@ -154,18 +154,18 @@ while(1){
     }
     // portValue = start << shift;
     // LATA = portValue;
-    if (shift == 2){
+    if (shift == 0){
         zlicz_gora();
-    } else if (shift == 3){
+    } else if (shift == 1){
         zlicz_dol();
-    } else if (shift == 4){
+    } else if (shift == 2){
         zlicz_gray_gora();
-    } else if (shift == 5){
+    } else if (shift == 3){
         zlicz_gray_dol();
-    } else if (shift == 0){
+    } else if (shift == 4){
         inkrementujBCD(&licznik);
         
-    } else if (shift == 1){
+    } else if (shift == 5){
         dekrementujBCD(&licznik);
     } else{
         __delay32(100);
