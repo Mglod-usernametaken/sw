@@ -19,6 +19,7 @@
 
 #include <xc.h>
 #include "bsp/buttons.h"
+#include "bsp/adc.h"
 #include <libpic30.h>
 
 #define FCY     4000000UL
@@ -104,83 +105,6 @@ void LCD_init(){
     __delay_ms(2);
 }
 //--------------------------------------------------------
-void mirkrofaluj(){
-    unsigned int moc;
-    unsigned int czas;
-    char timeStr[4];
-
-    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
-    ADC_ChannelEnnable(ADC_CHANNEL_POTENTIOMETER);
-    
-    LCD_setCursor(1,0);
-    LCD_print("Hell o");
-    __delay_ms(2000);
-    LCD_sendCommand(LCD_CLEAR);
-
-    LCD_setCursor(1,0);
-    LCD_print("ustaw moc:");
-    LCD_sendData(moc + '0');
-
-    while(1){
-        moc = ADC_Read10bit(ADC_CHANNELPOTENTIOMETER) >>2;
-        if (moc == 0xFF) continue;
-        LCD_setCursor(2,0);
-        LCD_print("ustaw moc:");
-        LCD_sendData(moc + '0');
-
-
-        if (BUTTON_IsPressed(BUTTON_S3) == true) {
-            __delay_ms(300);
-            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
-        }
-    }
-    
-    LCD_sendCommand(LCD_CLEAR);
-
-    LCD_setCursor(1,0);
-    LCD_print("czas: ");
-    czas = 0;
-    while(1){
-        czas = ADC_Read10bit(ADC_CHANNELPOTENTIOMETER) >>2;
-        if (czas == 0xFF) continue;
-        LCD_setCursor(2,0);
-        LCD_sendData(czas);
-
-
-        if(BUTTON_IsPressed(BUTTON_S3)==true){
-            __delay_ms(300);
-            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
-        }
-    }
-
-    LCD_sendCommand(LCD_CLEAR);
-
-    LCD_setCursor(1,0);
-    LCD_print("nacisnij start");
-    LCD_setCursor(2,4);
-    LCD_sendData(symbol1, symbol2);
-
-    while(BUTTON_IsPressed(BUTTON_S3) == false);
-    __delay_ms(300);
-
-    while (czas >0){
-        LCD_setCursor(1,0);
-        LCD_print("falowanie:");
-        sprintf(timeStr,"%03u", time);
-        LCD_setCursor(2,0);
-        LCD_print(timeStr);
-        __delay_ms(1000);
-        time--;
-    }
-
-    LCD_sendCommand(LCD_CLEAR);
-    LCD_setCursor(1,0);
-    LCD_print("done.");
-    __delay_ms(2000);
-    LCD_sendCommand(LCD_CLEAR);
-}
-
-
 unsigned char symbol1[8] = {
     0b00011,
     0b00100,
@@ -202,6 +126,97 @@ unsigned char symbol2[8] = {
     0b10000,
     0b00000
 };
+//--------------------------------------------------------
+void intToStr(unsigned int num, char* str, unsigned int width){
+    str[width] = '\0';
+    for (int i = width -1;i>=0; i--){
+        str[i] = (num % 10)+ '0';
+        num/=10;
+    }
+}
+
+//--------------------------------------------------------
+void mikrofaluj(){
+    unsigned int moc;
+    unsigned int czas;
+    char timeStr[4];
+
+    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
+    ADC_ChannelEnable(ADC_CHANNEL_POTENTIOMETER);
+    
+    LCD_setCursor(1,0);
+    LCD_print("Hell o");
+    __delay_ms(2000);
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("ustaw moc:");
+    LCD_sendData(moc + '0');
+
+    while(1){
+        moc = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER) >>2;
+        if (moc == 0xFF) continue;
+        LCD_setCursor(2,0);
+        LCD_print("ustaw moc:");
+        LCD_sendData(moc + '0');
+
+
+        if (BUTTON_IsPressed(BUTTON_S3) == true) {
+            __delay_ms(300);
+            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
+        }
+    }
+    
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("czas: ");
+    czas = 0;
+    while(1){
+        czas = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER) >>2;
+        if (czas == 0xFF) continue;
+        LCD_setCursor(2,0);
+        LCD_sendData(czas);
+
+
+        if(BUTTON_IsPressed(BUTTON_S3)==true){
+            __delay_ms(300);
+            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
+        }
+    }
+
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("nacisnij start");
+    LCD_setCursor(2,4);
+    LCD_sendData(symbol1);
+    LCD_setCursor(2,5);
+    LCD_sendData(symbol2);
+    
+    while(BUTTON_IsPressed(BUTTON_S3) == false);
+    __delay_ms(300);
+
+    while (czas >0){
+        LCD_setCursor(1,0);
+        LCD_print("falowanie:");
+        intToStr(czas, timeStr, 3);
+        //sprintf(timeStr,"%03u", czas);
+        LCD_setCursor(2,0);
+        LCD_print(timeStr);
+        __delay_ms(1000);
+        czas--;
+    }
+
+    LCD_sendCommand(LCD_CLEAR);
+    LCD_setCursor(1,0);
+    LCD_print("done.");
+    __delay_ms(2000);
+    LCD_sendCommand(LCD_CLEAR);
+}
+
+
+
 
 
 int main(void){
