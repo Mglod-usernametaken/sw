@@ -18,6 +18,7 @@
 // Use project enums instead of #define for ON and OFF.
 
 #include <xc.h>
+#include "bsp/buttons.h"
 #include <libpic30.h>
 
 #define FCY     4000000UL
@@ -102,6 +103,83 @@ void LCD_init(){
     LCD_sendCommand(LCD_ON);
     __delay_ms(2);
 }
+//--------------------------------------------------------
+void mirkrofaluj(){
+    unsigned int moc;
+    unsigned int czas;
+    char timeStr[4];
+
+    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
+    ADC_ChannelEnnable(ADC_CHANNEL_POTENTIOMETER);
+    
+    LCD_setCursor(1,0);
+    LCD_print("Hell o");
+    __delay_ms(2000);
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("ustaw moc:");
+    LCD_sendData(moc + '0');
+
+    while(1){
+        moc = ADC_Read10bit(ADC_CHANNELPOTENTIOMETER) >>2;
+        if (moc == 0xFF) continue;
+        LCD_setCursor(2,0);
+        LCD_print("ustaw moc:");
+        LCD_sendData(moc + '0');
+
+
+        if (BUTTON_IsPressed(BUTTON_S3) == true) {
+            __delay_ms(300);
+            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
+        }
+    }
+    
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("czas: ");
+    czas = 0;
+    while(1){
+        czas = ADC_Read10bit(ADC_CHANNELPOTENTIOMETER) >>2;
+        if (czas == 0xFF) continue;
+        LCD_setCursor(2,0);
+        LCD_sendData(czas);
+
+
+        if(BUTTON_IsPressed(BUTTON_S3)==true){
+            __delay_ms(300);
+            if (BUTTON_IsPressed(BUTTON_S3) == true) break;
+        }
+    }
+
+    LCD_sendCommand(LCD_CLEAR);
+
+    LCD_setCursor(1,0);
+    LCD_print("nacisnij start");
+    LCD_setCursor(2,4);
+    LCD_sendData(symbol1, symbol2);
+
+    while(BUTTON_IsPressed(BUTTON_S3) == false);
+    __delay_ms(300);
+
+    while (czas >0){
+        LCD_setCursor(1,0);
+        LCD_print("falowanie:");
+        sprintf(timeStr,"%03u", time);
+        LCD_setCursor(2,0);
+        LCD_print(timeStr);
+        __delay_ms(1000);
+        time--;
+    }
+
+    LCD_sendCommand(LCD_CLEAR);
+    LCD_setCursor(1,0);
+    LCD_print("done.");
+    __delay_ms(2000);
+    LCD_sendCommand(LCD_CLEAR);
+}
+
 
 unsigned char symbol1[8] = {
     0b00011,
@@ -132,20 +210,9 @@ int main(void){
     TRISE = 0x0000;
 
     LCD_init();
-    LCD_saveCustChar(0, symbol1);
-    LCD_saveCustChar(1, symbol2);
-
 
     while(1){
-        LCD_setCursor(2,0);
-        LCD_print("Hell o, World!");
-        LCD_sendData(0);  //wyswietlenie znaku z pamieci (slot 1)
-        LCD_sendData(1);
-
-        LCD_displayCharacter(11010000);
-        __delay_ms(1000);
-        LCD_sendCommand(LCD_CLEAR);
-        __delay_ms(500);
+        mikrofaluj();
     }
 
     return 0;
