@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main-sample.c bsp/adc.c bsp/buttons.c bsp/lcd.c bsp/lcd_printf.c bsp/leds.c bsp/rtcc.c bsp/timer_1ms.c
+SOURCEFILES_QUOTED_IF_SPACED=bsp/adc.c bsp/buttons.c bsp/lcd.c bsp/lcd_printf.c bsp/leds.c bsp/rtcc.c bsp/timer_1ms.c main-sample.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main-sample.o ${OBJECTDIR}/bsp/adc.o ${OBJECTDIR}/bsp/buttons.o ${OBJECTDIR}/bsp/lcd.o ${OBJECTDIR}/bsp/lcd_printf.o ${OBJECTDIR}/bsp/leds.o ${OBJECTDIR}/bsp/rtcc.o ${OBJECTDIR}/bsp/timer_1ms.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main-sample.o.d ${OBJECTDIR}/bsp/adc.o.d ${OBJECTDIR}/bsp/buttons.o.d ${OBJECTDIR}/bsp/lcd.o.d ${OBJECTDIR}/bsp/lcd_printf.o.d ${OBJECTDIR}/bsp/leds.o.d ${OBJECTDIR}/bsp/rtcc.o.d ${OBJECTDIR}/bsp/timer_1ms.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/bsp/adc.o ${OBJECTDIR}/bsp/buttons.o ${OBJECTDIR}/bsp/lcd.o ${OBJECTDIR}/bsp/lcd_printf.o ${OBJECTDIR}/bsp/leds.o ${OBJECTDIR}/bsp/rtcc.o ${OBJECTDIR}/bsp/timer_1ms.o ${OBJECTDIR}/main-sample.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/bsp/adc.o.d ${OBJECTDIR}/bsp/buttons.o.d ${OBJECTDIR}/bsp/lcd.o.d ${OBJECTDIR}/bsp/lcd_printf.o.d ${OBJECTDIR}/bsp/leds.o.d ${OBJECTDIR}/bsp/rtcc.o.d ${OBJECTDIR}/bsp/timer_1ms.o.d ${OBJECTDIR}/main-sample.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main-sample.o ${OBJECTDIR}/bsp/adc.o ${OBJECTDIR}/bsp/buttons.o ${OBJECTDIR}/bsp/lcd.o ${OBJECTDIR}/bsp/lcd_printf.o ${OBJECTDIR}/bsp/leds.o ${OBJECTDIR}/bsp/rtcc.o ${OBJECTDIR}/bsp/timer_1ms.o
+OBJECTFILES=${OBJECTDIR}/bsp/adc.o ${OBJECTDIR}/bsp/buttons.o ${OBJECTDIR}/bsp/lcd.o ${OBJECTDIR}/bsp/lcd_printf.o ${OBJECTDIR}/bsp/leds.o ${OBJECTDIR}/bsp/rtcc.o ${OBJECTDIR}/bsp/timer_1ms.o ${OBJECTDIR}/main-sample.o
 
 # Source Files
-SOURCEFILES=main-sample.c bsp/adc.c bsp/buttons.c bsp/lcd.c bsp/lcd_printf.c bsp/leds.c bsp/rtcc.c bsp/timer_1ms.c
+SOURCEFILES=bsp/adc.c bsp/buttons.c bsp/lcd.c bsp/lcd_printf.c bsp/leds.c bsp/rtcc.c bsp/timer_1ms.c main-sample.c
 
 
 
@@ -89,12 +89,6 @@ MP_LINKER_FILE_OPTION=,--script=p24FJ128GA010.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/main-sample.o: main-sample.c  .generated_files/flags/default/91eee39becc167e5901dda2a1316704510687bbd .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/main-sample.o.d 
-	@${RM} ${OBJECTDIR}/main-sample.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  main-sample.c  -o ${OBJECTDIR}/main-sample.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main-sample.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1    -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
-	
 ${OBJECTDIR}/bsp/adc.o: bsp/adc.c  .generated_files/flags/default/b1d518577f82d410db2d5f30e24c553ea4a04d9f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/bsp" 
 	@${RM} ${OBJECTDIR}/bsp/adc.o.d 
@@ -137,13 +131,13 @@ ${OBJECTDIR}/bsp/timer_1ms.o: bsp/timer_1ms.c  .generated_files/flags/default/4c
 	@${RM} ${OBJECTDIR}/bsp/timer_1ms.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  bsp/timer_1ms.c  -o ${OBJECTDIR}/bsp/timer_1ms.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/bsp/timer_1ms.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1    -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
 	
-else
-${OBJECTDIR}/main-sample.o: main-sample.c  .generated_files/flags/default/deb16517cf8cff22aaf6d5521e5d674e84397883 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+${OBJECTDIR}/main-sample.o: main-sample.c  .generated_files/flags/default/91eee39becc167e5901dda2a1316704510687bbd .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main-sample.o.d 
 	@${RM} ${OBJECTDIR}/main-sample.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  main-sample.c  -o ${OBJECTDIR}/main-sample.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main-sample.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
+	${MP_CC} $(MP_EXTRA_CC_PRE)  main-sample.c  -o ${OBJECTDIR}/main-sample.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main-sample.o.d"      -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1    -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
 	
+else
 ${OBJECTDIR}/bsp/adc.o: bsp/adc.c  .generated_files/flags/default/d29e67d3b47be45b1a158384c41283d211c03d1f .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
 	@${MKDIR} "${OBJECTDIR}/bsp" 
 	@${RM} ${OBJECTDIR}/bsp/adc.o.d 
@@ -185,6 +179,12 @@ ${OBJECTDIR}/bsp/timer_1ms.o: bsp/timer_1ms.c  .generated_files/flags/default/75
 	@${RM} ${OBJECTDIR}/bsp/timer_1ms.o.d 
 	@${RM} ${OBJECTDIR}/bsp/timer_1ms.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  bsp/timer_1ms.c  -o ${OBJECTDIR}/bsp/timer_1ms.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/bsp/timer_1ms.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
+	
+${OBJECTDIR}/main-sample.o: main-sample.c  .generated_files/flags/default/deb16517cf8cff22aaf6d5521e5d674e84397883 .generated_files/flags/default/da39a3ee5e6b4b0d3255bfef95601890afd80709
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/main-sample.o.d 
+	@${RM} ${OBJECTDIR}/main-sample.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE)  main-sample.c  -o ${OBJECTDIR}/main-sample.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main-sample.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)    $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off   
 	
 endif
 

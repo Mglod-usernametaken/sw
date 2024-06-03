@@ -1,6 +1,4 @@
 // PIC24FJ128GA010 Configuration Bit Settings
-// For more on Configuration Bits, see Section 1.1
-// consult your device data sheet
 // CONFIG2
 #pragma config POSCMOD = XT // XT Oscillator mode selected
 #pragma config OSCIOFNC = ON // OSC2/CLKO/RC15 as port I/O (RC15)
@@ -19,159 +17,70 @@
 // #pragma config statements should precede project file includes.
 // Use project enums instead of #define for ON and OFF.
 
-
-
-//----------------------------------------------------------------------
-
 #include <xc.h>
+#include "bsp/adc.h"
 #include "bsp/buttons.h"
 #include <libpic30.h>
 
-int TIME = 32;
 int shift = 0;
 
-
-void sleep(unsigned int time){
-    //for(uns:gned int i=0;i<(time*1000);i++){
-    //  i == i;
-        __delay32(2000000);
-    }
-//----------------------------------------------------------------------
-
-void zlicz_gora(void) {
-        static int zliczg = 0;
-        zliczg++;
-        if (zliczg>255){
-            zliczg = 0;
-        }
-        LATA = zliczg;
-        sleep(TIME);
+void sleep(unsigned int time) {
+    __delay32(1500000);
 }
-
-//----------------------------------------------------------------------
-
-void zlicz_dol(void) {
-        static int zliczd = 255;
-        zliczd--;
-        if (zliczd<0){
-            zliczd = 255;
-        }
-        LATA = zliczd;
-        sleep(TIME);
-}
-//----------------------------------------------------------------------
-
-void zlicz_gray_dol(void) {
-        static int zliczd = 255;
-        zliczd--;
-        if (zliczd<0){
-            zliczd = 255;
-        }
-        LATA = zliczd ^ (zliczd >> 1);
-        sleep(TIME);
-}
-//----------------------------------------------------------------------
-
-
-void zlicz_gray_gora(void) {
-        static int zliczg = 0;
-        zliczg++;
-        if (zliczg>255){
-            zliczg = 0;
-        }
-        LATA = zliczg ^ (zliczg >> 1);
-        sleep(TIME);
-}
-//----------------------------------------------------------------------
-
-struct BCD_Counter {
-    unsigned int cyfra1 : 4; // Pierwsza cyfra BCD
-    unsigned int cyfra10 : 4; // Druga cyfra BCD
-};
-
-// Funkcja inkrementująca licznik BCD
-void inkrementujBCD(struct BCD_Counter *licznik) {
-    if (licznik->cyfra1 < 9) {
-        licznik->cyfra1++;
-    } else {
-        licznik->cyfra1 = 0;
-        if (licznik->cyfra10 < 9) {
-            licznik->cyfra10++;
-        } else {
-            licznik->cyfra10 = 0;
-        }
-    }
-    LATA = (licznik->cyfra10 << 4) | licznik->cyfra1;
-    __delay32(2000000);
-}
- 
-//----------------------------------------------------------------------
-
-// Funkcja dekrementująca licznik BCD
-void dekrementujBCD(struct BCD_Counter *licznik) {
-    if (licznik->cyfra1 > 0) {
-        licznik->cyfra1--;
-    } else {
-        licznik->cyfra1 = 9;
-        if (licznik->cyfra10 > 0) {
-            licznik->cyfra10--;
-        } else {
-            licznik->cyfra10 = 9;
-        }
-    }
-    LATA = (licznik->cyfra10 << 4) | licznik->cyfra1;
-    __delay32(2000000);
-
-}
-
-//----------------------------------------------------------------------
-//----------------------------------------------------------------------
 
 int main(void) {
-unsigned char portValue = 0x53;
-// unsigned char start;
+    unsigned char portValue = 0x53;
+    int alarm = 0;
+    int flaga = 1;
 
-struct BCD_Counter licznik = {0, 0};
+    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
+    ADC_ChannelEnable(ADC_CHANNEL_POTENTIOMETER);
 
-AD1PCFG = 0xFFFF;
-TRISA = 0x0000;
+    TRISA = 0x0000;
 
-//start = 0b00000001;
+    unsigned int value;
 
-while(1){
-    if (BUTTON_IsPressed (BUTTON_S3) == true) {
-        shift = shift + 1;
-        if (shift > 5){
-            shift = 0;
+    while (1) {
+        // Odczyt warto?ci potencjometru
+        value = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER);
+
+        // Sprawdzenie poprawno?ci odczytu
+        if (value == 0xFFFF) {
+            continue;
         }
-    __delay32(1000);
-    } else if ((BUTTON_IsPressed (BUTTON_S4) == true)) {
-        shift = shift - 1;
-        if (shift < 0){
-            shift = 5;
+
+        // Normalizacja warto?ci do 8 bit�w
+        unsigned char normValue = value >> 2;
+
+        LATA = normValue;
+        // Sprawdzenie progu alarmowego
+        if (normValue >= 128) {
+            alarm = 1;
+            
+                  }
+
+        // Obs?uga alarmu
+        while (alarm == 1) {
+            // Sprawdzenie przycisku do wy??czenia alarmu
+            if (BUTTON_IsPressed(BUTTON_S3) == true) {
+                alarm = 0;
+                flaga = 0;
+                break;
+            }
+            if (normValue< 128) {
+                alarm=0;
+            }
+
+            // Miganie diod? LED
+            for (int i = 0; i < 50; i++) {
+                LATA = 249;
+                __delay32(10000);
+                LATA = 0;
+            }
+
+            // Wy?wietlenie warto?ci na porcie LATA
+            LATA = normValue;
         }
-    __delay32(1000);
     }
-    // portValue = start << shift;
-    // LATA = portValue;
-    if (shift == 2){
-        zlicz_gora();
-    } else if (shift == 3){
-        zlicz_dol();
-    } else if (shift == 4){
-        zlicz_gray_gora();
-    } else if (shift == 5){
-        zlicz_gray_dol();
-    } else if (shift == 0){
-        inkrementujBCD(&licznik);
-        
-    } else if (shift == 1){
-        dekrementujBCD(&licznik);
-    } else{
-        __delay32(100);
-    }
-
+    return 0;
 }
-return 0;
-}
-
