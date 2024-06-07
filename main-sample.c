@@ -162,34 +162,19 @@ void mikrofaluj() {
       continue;
     LCD_setCursor(2, 2);
     LCD_sendData(czas);
-
-    while(1){
-        if (BUTTON_IsPressed(BUTTON_S4) == true) {break;}
-    }
-
-    if (BUTTON_IsPressed(BUTTON_S4) == true) {
-      __delay_ms(300);
-      if (BUTTON_IsPressed(BUTTON_S4) == true)
-        break;
-    }
+    if (BUTTON_IsPressed(BUTTON_S4) == true) {break;}
   }
 
   LCD_sendCommand(LCD_CLEAR);
 
   LCD_setCursor(1, 2);
   LCD_print("nacisnij start");
-  // LCD_setCursor(2,4);
-  // LCD_sendData(symbol1);
-  // LCD_setCursor(2,5);
-  // LCD_sendData(symbol2);
-    while(1){
-        if (BUTTON_IsPressed(BUTTON_S4) == true) {break;}
-    }
-
-
-  while (BUTTON_IsPressed(BUTTON_S4) == false)
-    ;
+  while (BUTTON_IsPressed(BUTTON_S4) == false);
   __delay_ms(300);
+
+  while (BUTTON_IsPressed(BUTTON_S4) == false);
+  __delay_ms(300);
+
 
   while (czas > 0) {
     LCD_setCursor(1, 0);
@@ -205,7 +190,7 @@ void mikrofaluj() {
   LCD_sendCommand(LCD_CLEAR);
   LCD_setCursor(1, 0);
   LCD_print("done.");
-  __delay_ms(2000);
+  __delay_ms(20000);
   LCD_sendCommand(LCD_CLEAR);
 }
 
