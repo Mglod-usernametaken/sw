@@ -124,7 +124,6 @@ void mikrofaluj() {
   unsigned int jestCzas;
   unsigned int jestStart;
 
-
   ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
   ADC_ChannelEnable(ADC_CHANNEL_POTENTIOMETER);
 
@@ -133,35 +132,35 @@ void mikrofaluj() {
   __delay_ms(2000);
   LCD_sendCommand(LCD_CLEAR);
 
-  jestMoc = 0;
-  while (jestMoc == 0) {
+  while (1) {
     moc = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER) >> 2;
-    if (moc == 0xFF)
-      continue;
+    // if (moc == 0xFF)
+    // continue;
     LCD_setCursor(2, 2);
     LCD_print("ustaw moc:");
-    LCD_sendData(moc + '0');
-        if (BUTTON_IsPressed(BUTTON_S4) == true) {
-            jestMoc = 1;
-            __delay_ms(500);
-        }
+    LCD_sendData(moc);
+    if (BUTTON_IsPressed(BUTTON_S4)) {
+      __delay_ms(500);
+      if (BUTTON_IsPressed(BUTTON_S4)) {
+        break;
+      }
     }
+  }
 
   LCD_sendCommand(LCD_CLEAR);
 
   LCD_setCursor(1, 2);
   LCD_print("czas: ");
   czas = 0;
-  jestCzas = 0;
-  while (jestCzas == 0) {
+  while (1) {
     czas = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER) >> 2;
     if (czas == 0xFF)
       continue;
     LCD_setCursor(2, 2);
     LCD_sendData(czas);
-    if (BUTTON_IsPressed(BUTTON_S4) == true) {
-        jestCzas = 1;
-        __delay_ms(500);
+    if (BUTTON_IsPressed(BUTTON_S4)) {
+      __delay_ms(500);
+      break;
     }
   }
 
@@ -171,20 +170,19 @@ void mikrofaluj() {
   LCD_print("nacisnij start");
 
   jestCzas = 0;
-  while (jestCzas == 0){
-      if(BUTTON_IsPressed(BUTTON_S4) == true) {
-          jestCzas = 1;
-          __delay_ms(500);
-      }
+  while (jestCzas == 0) {
+    if (BUTTON_IsPressed(BUTTON_S4)) {
+      jestCzas = 1;
+      __delay_ms(500);
+    }
   }
 
   LCD_sendCommand(LCD_CLEAR);
   __delay_ms(300);
 
-
   while (czas > 0) {
     LCD_sendCommand(LCD_CLEAR);
-    LCD_setCursor(1, 2);
+    LCD_setCursor(1, 4);
     LCD_print("falowanie:");
     intToStr(czas, timeStr, 3);
     // sprintf(timeStr,"%03u", czas);
@@ -202,6 +200,7 @@ void mikrofaluj() {
 }
 
 int main(void) {
+  AD1PCFG = 0xFFFF;
   TRISB = 0x7FFF;
   TRISD = 0x0000;
   TRISE = 0x0000;
