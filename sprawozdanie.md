@@ -22,6 +22,18 @@
 ## opis zrealizowanych zadań
 
 ### liczniki binarne
+
+Program przygotowany w tym zadaniu zajmuje się wyświetlaniem kolejnych liczb przy użyciu diod dostępnych na płytce. Naciśnięcie przycisków S3 oraz S4 powoduje zmianę systemu binarnego w jakim wyświetlane są liczby. Dostępnymi trybami są:
+
+- licznik binarny zliczający w górę
+- licznik binarny zliczający w dół
+- licznik w kodzie Graya zliczający w górę
+- licznik w kodzie Graya zliczający w dół
+- dwucyfrowy licznik BCD zliczający w górę
+- dwucyfrowy licznik BCD zliczający w dół
+
+Poniżej możemy się przyjrzeć implementacji zastosowanych funkcji zliczających:
+![obrazek](img/licznik-bin3.jpg)
 ### potencjometr
 ### mikrofalówka
 ### zegar szachowy
